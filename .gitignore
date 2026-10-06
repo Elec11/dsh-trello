@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Build output (tsc outDir)
+dist/
+
+# npm cache
+npm-cache/
+.npm-cache/
+
+# DeepSeek Harness runtime checkout / scratch (not plugin source)
+.work/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment / secrets (API key + token auth)
+.env
+.env.*
+
+# OS files
+.DS_Store
+Thumbs.db

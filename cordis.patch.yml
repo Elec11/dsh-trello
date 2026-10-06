@@ -1,0 +1,22 @@
+# dsh-trello: Trello tools for DeepSeek Harness.
+#
+# Authenticates with a Trello API key + token. No OAuth, no MCP, no public
+# hostname — the plugin simply makes outbound HTTPS requests to api.trello.com.
+#
+# This row is inserted automatically when the bundle is installed. Fill in the
+# two credential values below (or set TRELLO_API_KEY / TRELLO_TOKEN in the
+# environment instead). Empty values keep the tools in a clean "not configured"
+# state until you add them.
+#
+# How to get the values: Trello -> your avatar -> "Show API key" gives the API
+# key; "Generate new token" (select only the boards you want to expose) gives
+# the token. Use a dedicated, minimal-permission token.
+- insert:
+    - id: tool-trello
+      name: dsh-trello
+      config:
+        apiKey: ""
+        token: ""
+        # optional:
+        # baseUrl: https://api.trello.com
+        # timeoutMs: 30000
