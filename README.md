@@ -39,6 +39,7 @@ credentials):
     # optional:
     # baseUrl: https://api.trello.com
     # timeoutMs: 30000
+    # passive: false
 ```
 
 **Fill in the two values** in the installed package's `cordis.patch.yml`
@@ -84,6 +85,34 @@ Trello plugin is not configured. Set TRELLO_API_KEY and TRELLO_TOKEN.
 - **Revoke**: delete the token in Trello (*My tokens*). The API key stays
   valid but is useless without a token.
 
+### Passive (read-only) mode
+
+Set `passive: true` to expose only the read-only tools. The plugin then
+registers just the five read tools:
+
+- `trello_list_boards`
+- `trello_get_board`
+- `trello_list_lists`
+- `trello_list_cards`
+- `trello_get_card`
+
+The three mutating tools (`trello_create_card`, `trello_update_card`, and
+`trello_add_comment`) are not registered, so the agent can read Trello but
+cannot create, update, or comment. Credentials work the same way in passive
+mode.
+
+```yaml
+- id: tool-trello
+  config:
+    apiKey: PASTE_YOUR_API_KEY
+    token: PASTE_YOUR_TOKEN
+    passive: true
+```
+
+The default is `passive: false` (full mode, all eight tools). The flag is
+volatile, so toggling it rebuilds the tool set on the next re-composition
+(HMR or restart).
+
 ## Available tools
 
 | Tool | Purpose |
@@ -102,6 +131,11 @@ Every tool except `trello_list_boards` takes an explicit id
 raw Trello API objects). The three list tools accept an optional `limit`
 (1–100, default 50). Card deletion is deliberately not part of the initial
 tool set.
+
+The first five tools are read-only; `trello_create_card`,
+`trello_update_card`, and `trello_add_comment` are the only tools that
+write. In [passive (read-only) mode](#passive-read-only-mode) only the
+read-only tools are registered.
 
 ## Authentication
 

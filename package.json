@@ -1,6 +1,6 @@
 {
   "name": "dsh-trello",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Trello boards, lists, cards and comments as native DeepSeek Harness tools. API key + token authentication; no OAuth, no MCP, no public hostname.",
   "type": "module",
   "main": "dist/src/index.js",

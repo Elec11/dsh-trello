@@ -9,6 +9,7 @@ const cases = {
   'shipped (empty strings)': { apiKey: '', token: '' },
   'with values': { apiKey: 'k', token: 't' },
   'with optional': { apiKey: 'k', token: 't', baseUrl: 'https://api.trello.com', timeoutMs: 30000 },
+  'with passive': { apiKey: 'k', token: 't', passive: true },
 }
 for (const [label, cfg] of Object.entries(cases)) {
   try {

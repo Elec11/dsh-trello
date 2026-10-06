@@ -35,6 +35,27 @@ assert.deepEqual(names, [
   'trello_update_card',
 ], 'all eight tools must be registered, got: ' + names.join(', '))
 
+// 3b. Passive (read-only) mode registers only the five read-only tools
+const registeredPassive = []
+const ctxPassive = {
+  tools: { register: (def) => registeredPassive.push(def) },
+  logger: { warn: () => {}, error: () => {}, debug: () => {} },
+  fiber: { entry: { options: { id: 'tool-trello' } } },
+}
+mod.apply(ctxPassive, { passive: true })
+assert.deepEqual(
+  registeredPassive.map((t) => t.name).sort(),
+  [
+    'trello_get_board',
+    'trello_get_card',
+    'trello_list_boards',
+    'trello_list_cards',
+    'trello_list_lists',
+  ],
+  'passive mode must register only the five read-only tools, got: ' +
+    registeredPassive.map((t) => t.name).join(', '),
+)
+
 // 4. Every definition has the required shape
 for (const def of registered) {
   assert.equal(typeof def.name, 'string')

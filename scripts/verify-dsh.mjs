@@ -23,6 +23,24 @@ mod.apply(
 )
 assert.equal(registered.length, 8, 'eight tools registered')
 
+// 1b. Passive (read-only) mode registers exactly the five read-only tools,
+// and each of their output schemas passes the real DSH register() gate.
+const registeredPassive = []
+mod.apply(
+  { tools: { register: (def) => registeredPassive.push(def) }, logger: { warn: () => {}, error: () => {}, debug: () => {} } },
+  { passive: true },
+)
+assert.equal(registeredPassive.length, 5, 'five tools registered in passive mode')
+assert.deepEqual(
+  registeredPassive.map((t) => t.name).sort(),
+  ['trello_get_board', 'trello_get_card', 'trello_list_boards', 'trello_list_cards', 'trello_list_lists'],
+  'passive mode must register only the read-only tools',
+)
+for (const def of registeredPassive) {
+  assertSupportedJsonSchema(def.output.schema)
+}
+console.log('  ok  passive mode registers the five read-only tools (schemas valid)')
+
 // 2. The exact registration gate: every output schema must be a supported schema.
 for (const def of registered) {
   assertSupportedJsonSchema(def.output.schema) // throws JsonSchemaError on violation

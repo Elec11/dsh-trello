@@ -66,6 +66,7 @@ export function buildCardTools(runtime: TrelloRuntime): ToolDefinition[] {
       },
     },
     timeoutMs: TOOL_TIMEOUT_MS,
+    readOnly: true,
     async execute(args: { listId: string; limit?: number }, exec) {
       const cards = await runtime.getClient().getCards(args.listId, { limit: args.limit ?? 50, signal: runtime.signalOf(exec) })
       return { cards }
@@ -116,6 +117,7 @@ export function buildCardTools(runtime: TrelloRuntime): ToolDefinition[] {
       },
     },
     timeoutMs: TOOL_TIMEOUT_MS,
+    readOnly: true,
     async execute(args: { cardId: string }, exec) {
       return runtime.getClient().getCard(args.cardId, { signal: runtime.signalOf(exec) })
     },
@@ -148,6 +150,7 @@ export function buildCardTools(runtime: TrelloRuntime): ToolDefinition[] {
       },
     },
     timeoutMs: TOOL_TIMEOUT_MS,
+    readOnly: false,
     async execute(args: { listId: string; name: string; description?: string; due?: string; position?: number; labelIds?: string[] }, exec) {
       const input: { listId: string; name: string; description?: string; due?: string; position?: number; labelIds?: string[] } = {
         listId: args.listId,
@@ -198,6 +201,7 @@ export function buildCardTools(runtime: TrelloRuntime): ToolDefinition[] {
       },
     },
     timeoutMs: TOOL_TIMEOUT_MS,
+    readOnly: false,
     async execute(args: { cardId: string; name?: string; description?: string; due?: string | null; closed?: boolean; listId?: string; position?: number }, exec) {
       const patch: { name?: string; description?: string; due?: string | null; closed?: boolean; listId?: string; position?: number } = {}
       if (args.name !== undefined) patch.name = args.name
