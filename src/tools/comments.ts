@@ -31,6 +31,7 @@ export function buildCommentTools(runtime: TrelloRuntime): ToolDefinition[] {
       },
     },
     timeoutMs: TOOL_TIMEOUT_MS,
+    readOnly: false,
     async execute(args: { cardId: string; text: string }, exec) {
       const text = String(args.text)
       if (text.trim() === '') {

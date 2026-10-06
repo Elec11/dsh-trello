@@ -14,6 +14,11 @@ export interface ToolDefinition {
     render: (args: any, value: any) => Array<{ type: 'text'; text: string }>
   }
   timeoutMs: number
+  /**
+   * True for tools that only read Trello state. Passive (read-only) mode
+   * registers only these tools, so the model cannot create, update, or comment.
+   */
+  readOnly: boolean
   execute: (args: any, exec: { signal?: AbortSignal; agent?: any }) => Promise<any>
 }
 

@@ -57,3 +57,15 @@ export function resolveTrelloConfig(live: Record<string, unknown>): TrelloClient
   if (timeoutMs !== undefined) config.timeoutMs = timeoutMs
   return config
 }
+
+/**
+ * Resolve the passive (read-only) flag.
+ *
+ * `passive: true` restricts the plugin to read-only tools (boards, lists, and
+ * cards can be listed and read, but no card can be created, updated, or
+ * commented on). Only a strict boolean `true` enables passive mode; an absent
+ * flag, `false`, or any malformed value leaves the full tool set enabled.
+ */
+export function resolvePassive(live: Record<string, unknown>): boolean {
+  return live.passive === true
+}

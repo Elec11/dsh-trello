@@ -3,7 +3,8 @@ import assert from 'node:assert/strict'
 
 import { TrelloClient } from '../src/trello/client.js'
 import { TrelloConfigError, TrelloError } from '../src/trello/errors.js'
-import { resolveTrelloConfig } from '../src/config.js'
+import { resolveTrelloConfig, resolvePassive } from '../src/config.js'
+import { apply, Config } from '../src/index.js'
 import { buildBoardTools } from '../src/tools/boards.js'
 import { buildListTools } from '../src/tools/lists.js'
 import { buildCardTools } from '../src/tools/cards.js'
@@ -174,6 +175,62 @@ test('registration shape: exactly the eight fixed tool names, no duplicates or e
 })
 
 // ---------------------------------------------------------------------------
+// Passive (read-only) mode
+// ---------------------------------------------------------------------------
+
+// Run apply() against a mock context and return the sorted registered tool names.
+function applyToolNames(config: Record<string, unknown>): string[] {
+  const registered: Array<{ name: string }> = []
+  apply({ tools: { register: (def: { name: string }) => registered.push(def) } }, config)
+  return registered.map((tool) => tool.name).sort()
+}
+
+test('apply (full mode, default): registers all eight tools', () => {
+  assert.deepEqual(
+    applyToolNames({}),
+    [
+      'trello_add_comment',
+      'trello_create_card',
+      'trello_get_board',
+      'trello_get_card',
+      'trello_list_boards',
+      'trello_list_cards',
+      'trello_list_lists',
+      'trello_update_card',
+    ],
+  )
+})
+
+test('apply (passive mode): registers only the five read-only tools', () => {
+  assert.deepEqual(
+    applyToolNames({ passive: true }),
+    [
+      'trello_get_board',
+      'trello_get_card',
+      'trello_list_boards',
+      'trello_list_cards',
+      'trello_list_lists',
+    ],
+  )
+})
+
+test('apply (passive mode): never registers a mutating tool', () => {
+  const names = applyToolNames({ passive: true })
+  for (const mutating of ['trello_create_card', 'trello_update_card', 'trello_add_comment']) {
+    assert.ok(!names.includes(mutating), `${mutating} must not be registered in passive mode`)
+  }
+})
+
+test('resolvePassive: only a strict boolean true enables passive mode', () => {
+  assert.equal(resolvePassive({ passive: true }), true)
+  assert.equal(resolvePassive({ passive: false }), false)
+  assert.equal(resolvePassive({}), false)
+  assert.equal(resolvePassive({ passive: undefined }), false)
+  assert.equal(resolvePassive({ passive: 'yes' }), false)
+  assert.equal(resolvePassive({ passive: 1 }), false)
+})
+
+// ---------------------------------------------------------------------------
 // Schema strictness
 // ---------------------------------------------------------------------------
 
@@ -259,6 +316,12 @@ test('resolveTrelloConfig: unconfigured throws, env and live config resolve', ()
     if (savedToken === undefined) delete process.env.TRELLO_TOKEN
     else process.env.TRELLO_TOKEN = savedToken
   }
+})
+
+test('Config schema: accepts passive true/false and still parses the empty config', () => {
+  assert.ok(Config({}), 'Config({}) must still parse')
+  assert.ok(Config({ apiKey: 'k', token: 't', passive: true }), 'passive: true must parse')
+  assert.ok(Config({ apiKey: 'k', token: 't', passive: false }), 'passive: false must parse')
 })
 
 // ---------------------------------------------------------------------------

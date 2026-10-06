@@ -11,6 +11,11 @@
 # How to get the values: Trello -> your avatar -> "Show API key" gives the API
 # key; "Generate new token" (select only the boards you want to expose) gives
 # the token. Use a dedicated, minimal-permission token.
+#
+# Passive (read-only) mode: set `passive: true` to expose only the read tools
+# (list boards / get board / list lists / list cards / get card). The mutating
+# tools (create card, update card, add comment) are not registered, so the
+# agent can read Trello but never write to it. Defaults to false (full mode).
 - insert:
     - id: tool-trello
       name: dsh-trello
@@ -20,3 +25,4 @@
         # optional:
         # baseUrl: https://api.trello.com
         # timeoutMs: 30000
+        # passive: false   # true = read-only (passive) mode

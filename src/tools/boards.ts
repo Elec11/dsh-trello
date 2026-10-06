@@ -48,6 +48,7 @@ export function buildBoardTools(runtime: TrelloRuntime): ToolDefinition[] {
       },
     },
     timeoutMs: TOOL_TIMEOUT_MS,
+    readOnly: true,
     async execute(args: { limit?: number }, exec) {
       const boards = await runtime.getClient().getBoards({ limit: args.limit ?? 50, signal: runtime.signalOf(exec) })
       return { boards }
@@ -87,6 +88,7 @@ export function buildBoardTools(runtime: TrelloRuntime): ToolDefinition[] {
       },
     },
     timeoutMs: TOOL_TIMEOUT_MS,
+    readOnly: true,
     async execute(args: { boardId: string }, exec) {
       return runtime.getClient().getBoard(args.boardId, { signal: runtime.signalOf(exec) })
     },

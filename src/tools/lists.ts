@@ -54,6 +54,7 @@ export function buildListTools(runtime: TrelloRuntime): ToolDefinition[] {
       },
     },
     timeoutMs: TOOL_TIMEOUT_MS,
+    readOnly: true,
     async execute(args: { boardId: string; limit?: number }, exec) {
       const lists = await runtime.getClient().getLists(args.boardId, { limit: args.limit ?? 50, signal: runtime.signalOf(exec) })
       return { lists }
