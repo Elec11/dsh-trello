@@ -1,6 +1,6 @@
 {
   "name": "dsh-trello",
-  "version": "0.2.0",
+  "version": "0.1.1",
   "description": "Trello boards, lists, cards and comments as native DeepSeek Harness tools. API key + token authentication; no OAuth, no MCP, no public hostname.",
   "type": "module",
   "main": "dist/src/index.js",
@@ -10,7 +10,8 @@
       "types": "./dist/src/index.d.ts",
       "default": "./dist/src/index.js"
     },
-    "./client": "./dist/src/trello/client.js",
+    "./client": "./dist/src/client.js",
+    "./trello": "./dist/src/trello/client.js",
     "./cordis.patch.yml": "./cordis.patch.yml",
     "./package.json": "./package.json"
   },
@@ -21,8 +22,10 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsc",
-    "test": "tsc && node --test \"dist/test/*.test.js\"",
+    "build": "npm run build:node && npm run build:client",
+    "build:node": "tsc",
+    "build:client": "tsc -p tsconfig.client.json",
+    "test": "npm run build:node && node --test \"dist/test/*.test.js\"",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
@@ -35,6 +38,13 @@
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-settings",
+        "@deepseek-ai/dsh-client-ui-renderer"
+      ]
     }
   },
   "engines": {
