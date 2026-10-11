@@ -87,8 +87,8 @@ Trello plugin is not configured. Set TRELLO_API_KEY and TRELLO_TOKEN.
 
 ### Passive (read-only) mode
 
-Set `passive: true` to expose only the read-only tools. The plugin then
-registers just the five read tools:
+The default is `passive: false` (full mode, all eight tools). Turning on
+passive mode exposes only the five read-only tools:
 
 - `trello_list_boards`
 - `trello_get_board`
@@ -101,6 +101,27 @@ The three mutating tools (`trello_create_card`, `trello_update_card`, and
 cannot create, update, or comment. Credentials work the same way in passive
 mode.
 
+#### Toggle it from the plugin menu (no file edit)
+
+The primary way to switch modes is the **Read-only mode** switch on the
+plugin's page. In DeepSeek Harness open **Settings → Plugins**, select
+**dsh-trello**, and flip the switch. It takes effect immediately: turning it
+on drops the three mutating tools, turning it off restores them. The choice
+persists across restarts.
+
+Under the hood the switch writes `passive` through the normal settings
+pipeline (`configForms` → `remote.settings.mutate` → `cordis.patch.yml` →
+hot reload), so the tool set rebuilds on the spot. The page is provided by
+the plugin's browser half ([`src/client.ts`](src/client.ts)), which registers
+a `plugins.bundle.config` entry keyed by the package name `dsh-trello` and
+reads/writes the shared settings form for the `tool-trello` entry — the same
+value the YAML flag sets.
+
+#### Or set it in `cordis.patch.yml`
+
+Set `passive: true` on the row to start in read-only mode (or to override the
+GUI choice for a given profile):
+
 ```yaml
 - id: tool-trello
   config:
@@ -109,9 +130,8 @@ mode.
     passive: true
 ```
 
-The default is `passive: false` (full mode, all eight tools). The flag is
-volatile, so toggling it rebuilds the tool set on the next re-composition
-(HMR or restart).
+The flag is volatile, so changing it (by either method) rebuilds the tool set
+on the next re-composition (HMR or restart).
 
 ## Available tools
 
@@ -163,9 +183,16 @@ Trello authentication failed. Check TRELLO_API_KEY and TRELLO_TOKEN.
 
 ```sh
 npm install
-npm run build     # tsc -> dist/src (package) + dist/test
-npm test          # builds, then runs node --test over dist/test/*.test.js
+npm run build     # build:node (tsc -> dist/src, dist/test) + build:client (browser half -> dist/src/client.js)
+npm test          # builds the node half, then runs node --test over dist/test/*.test.js
 ```
+
+The package has two halves: the **host half** (`src/index.ts`, the tools and
+config schema, compiled to ESM by `tsconfig.json`) and the **browser half**
+(`src/client.ts`, the plugin-menu page, compiled to CommonJS by
+`tsconfig.client.json` and shipped as the package's `./client` export). The
+Trello REST client is exposed separately at `./trello`
+(`dist/src/trello/client.js`).
 
 Two standalone checks run against the built output (no Harness required):
 
